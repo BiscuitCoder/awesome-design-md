@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awesome Design MD — Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: oklch(98% 0.006 65);
+      --bg-card: oklch(99.5% 0.003 65);
+      --text: oklch(16% 0.012 65);
+      --text-muted: oklch(52% 0.01 65);
+      --border: oklch(88% 0.012 65);
+      --border-hover: oklch(68% 0.015 65);
+      --accent: oklch(48% 0.18 255);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem) 0;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .header-meta {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .divider {
+      margin-top: 2rem;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .header-sub {
+      margin-top: 1.25rem;
+      padding-bottom: clamp(1.5rem, 4vw, 3rem);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .header-sub p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      line-height: 1.6;
+    }
+
+    .search-wrap {
+      margin-left: auto;
+    }
+
+    #search {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 0.5rem 0.85rem;
+      width: 220px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #search::placeholder { color: var(--text-muted); }
+    #search:focus { border-color: var(--border-hover); }
+
+    /* ── Grid ── */
+    main {
+      padding: 0 clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vw, 5rem);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      color: inherit;
+      display: block;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+
+    .card:has(.card-footer:hover) {
+      background: oklch(97% 0.01 65);
+      z-index: 1;
+    }
+
+    .card-footer:hover .card-name {
+      color: var(--accent);
+    }
+
+    .card-footer:hover ~ .preview-overlay,
+    .card:has(.card-footer:hover) .preview-overlay {
+      opacity: 1;
+    }
+
+    /* iframe preview */
+    .card-preview {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* skeleton placeholder shown before iframe loads */
+    .card-preview .skeleton {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        oklch(93% 0.008 65) 25%,
+        oklch(96% 0.005 65) 50%,
+        oklch(93% 0.008 65) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite;
+    }
+
+    .card-preview.loaded .skeleton { display: none; }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .card-preview iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1280px;
+      height: 800px;
+      transform-origin: top left;
+      border: none;
+    }
+
+    .preview-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 50%,
+        oklch(16% 0.012 65 / 0.08) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+
+    /* card footer */
+    .card-footer {
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      transition: color 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-arrow {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      opacity: 0;
+      transform: translate(-4px, 4px);
+      transition: opacity 0.2s, transform 0.2s;
+      color: var(--accent);
+    }
+
+    .card-footer:hover .card-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    /* empty state */
+    .empty {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      margin: 0 clamp(1.5rem, 5vw, 4rem);
+      padding: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .search-wrap { margin-left: 0; width: 100%; }
+      #search { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Awesome <em>Design</em> MD</h1>
+    <span class="header-meta" id="count-label">— brands</span>
+  </div>
+  <hr class="divider">
+  <div class="header-sub">
+    <p>Design system docs from the world's best product teams, rendered as markdown.</p>
+    <div class="search-wrap">
+      <input id="search" type="search" placeholder="Filter brands…" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">No brands match your search.</div>
+</main>
+
+<footer>
+  <p>Scroll inside any preview · click the brand name to open on GitHub.</p>
+  <a href="https://github.com/BiscuitCoder/awesome-design-md" target="_blank" rel="noopener">
+    BiscuitCoder/awesome-design-md ↗
+  </a>
+</footer>
+
+<script>
+  const GITHUB_BASE = 'https://github.com/BiscuitCoder/awesome-design-md/tree/main/design-md';
+  const PREVIEW_BASE = 'design-md';
+
+  const brands = [
+    'airbnb','airtable','apple','bmw','cal','claude','clay',
+    'clickhouse','cohere','coinbase','composio','cursor','elevenlabs',
+    'expo','ferrari','figma','framer','hashicorp','ibm','intercom',
+    'kraken','lamborghini','linear.app','lovable','minimax','mintlify',
+    'miro','mistral.ai','mongodb','notion','nvidia','ollama',
+    'opencode.ai','pinterest','posthog','raycast','renault','replicate',
+    'resend','revolut','runwayml','sanity','sentry','spacex','spotify',
+    'stripe','supabase','superhuman','tesla','together.ai','uber',
+    'vercel','voltagent','warp','webflow','wise','x.ai','zapier'
+  ];
+
+  document.getElementById('count-label').textContent = `— ${brands.length} brands`;
+
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+
+  // Build cards
+  brands.forEach(brand => {
+    const a = document.createElement('div');
+    a.className = 'card';
+    a.dataset.brand = brand;
+
+    const preview = document.createElement('div');
+    preview.className = 'card-preview';
+
+    const skeleton = document.createElement('div');
+    skeleton.className = 'skeleton';
+
+    const iframe = document.createElement('iframe');
+    iframe.dataset.src = `${PREVIEW_BASE}/${brand}/preview.html`;
+    iframe.title = brand;
+    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+    iframe.addEventListener('load', () => preview.classList.add('loaded'), { once: true });
+
+    const overlay = document.createElement('div');
+    overlay.className = 'preview-overlay';
+
+    preview.appendChild(skeleton);
+    preview.appendChild(iframe);
+    preview.appendChild(overlay);
+
+    const footer = document.createElement('a');
+    footer.className = 'card-footer';
+    footer.href = `${GITHUB_BASE}/${brand}`;
+    footer.target = '_blank';
+    footer.rel = 'noopener';
+
+    const name = document.createElement('span');
+    name.className = 'card-name';
+    name.textContent = brand;
+
+    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    arrow.setAttribute('viewBox', '0 0 24 24');
+    arrow.setAttribute('fill', 'none');
+    arrow.setAttribute('stroke', 'currentColor');
+    arrow.setAttribute('stroke-width', '1.5');
+    arrow.classList.add('card-arrow');
+    arrow.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15M4.5 4.5H19.5v15"/>';
+
+    footer.appendChild(name);
+    footer.appendChild(arrow);
+
+    a.appendChild(preview);
+    a.appendChild(footer);
+    grid.appendChild(a);
+  });
+
+  // Scale iframes to fit preview containers
+  function scaleIframes() {
+    document.querySelectorAll('.card-preview').forEach(container => {
+      const iframe = container.querySelector('iframe');
+      if (!iframe) return;
+      const scale = container.offsetWidth / 1280;
+      iframe.style.transform = `scale(${scale})`;
+      container.style.height = `${Math.round(800 * scale)}px`;
+    });
+  }
+
+  scaleIframes();
+  window.addEventListener('resize', scaleIframes);
+
+  // Lazy-load iframes via IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const iframe = entry.target.querySelector('iframe[data-src]');
+      if (iframe) {
+        iframe.src = iframe.dataset.src;
+        delete iframe.dataset.src;
+      }
+      observer.unobserve(entry.target);
+    });
+  }, {
+    rootMargin: '200px 0px', // 提前 200px 开始加载
+  });
+
+  document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+  // Search filter
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    let visible = 0;
+    document.querySelectorAll('.card').forEach(card => {
+      const match = !q || card.dataset.brand.includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+    document.getElementById('count-label').textContent =
+      q ? `— ${visible} of ${brands.length}` : `— ${brands.length} brands`;
+    // Re-scale after layout shift
+    requestAnimationFrame(scaleIframes);
+  });
+</script>
+
+</body>
+</html>
