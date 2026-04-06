@@ -6,6 +6,11 @@
 <br/>
 <br/>
 
+<img width="2924" height="8549" alt="image" src="https://github.com/user-attachments/assets/31c06319-5441-482e-a39a-489a499d4f81" />
+
+<br/>
+<br/>
+
 <div align="center">
     <strong>Curated collection of DESIGN.md files inspired by developer focused websites.</strong>
     <br />
