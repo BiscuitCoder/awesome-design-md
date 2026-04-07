@@ -113,7 +113,7 @@
         #search {
             padding: 0.55rem 1rem;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 0;
             background: var(--surface);
             font-family: inherit;
             font-size: 0.875rem;
@@ -142,14 +142,14 @@
         #grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            gap: 20px;
         }
         /* ── Card ── */
         
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 0;
             overflow: hidden;
             transition: box-shadow 0.2s, background 0.2s;
         }
@@ -174,7 +174,7 @@
             top: 0;
             left: 0;
             width: 1280px;
-            height: 800px;
+            height: 1000px;
             transform-origin: top left;
             border: none;
             display: block;
@@ -199,7 +199,7 @@
         .card-actions button {
             width: 32px;
             height: 32px;
-            border-radius: 8px;
+            border-radius: 0;
             border: none;
             background: oklch(100% 0 0 / 0.92);
             backdrop-filter: blur(6px);
@@ -348,7 +348,7 @@
             height: calc(100vh - 48px);
             max-width: 1400px;
             background: var(--surface);
-            border-radius: 16px;
+            border-radius: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -395,7 +395,7 @@
             gap: 6px;
             padding: 0.35rem 0.75rem;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: 0;
             text-decoration: none;
             color: var(--text);
             font-size: 0.8rem;
@@ -418,7 +418,7 @@
             border: none;
             background: transparent;
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -612,48 +612,30 @@
                 if (!iframe) return;
                 const scale = container.offsetWidth / 1280;
                 iframe.style.transform = `scale(${scale})`;
-                container.style.height = `${Math.round(800 * scale)}px`;
+                container.style.height = `${Math.round(1000 * scale)}px`;
             });
         }
         scaleIframes();
         window.addEventListener('resize', scaleIframes);
 
-        // ── Throttled lazy load ──────────────────────────────────────
-        const MAX_CONCURRENT = 4;
-        let loadingCount = 0;
-        const loadQueue = [];
-
-        function processQueue() {
-            while (loadingCount < MAX_CONCURRENT && loadQueue.length > 0) {
-                const iframe = loadQueue.shift();
-                if (!iframe.dataset.src) continue; // already loaded
-                loadingCount++;
-                iframe.src = iframe.dataset.src;
-                delete iframe.dataset.src;
-                const done = () => {
-                    loadingCount--;
-                    processQueue();
-                };
-                iframe.addEventListener('load', done, {
-                    once: true
-                });
-                iframe.addEventListener('error', done, {
-                    once: true
-                });
-            }
+        // ── Viewport lazy load（仅加载视窗内可见的 iframe，并行发起）────────
+        function startPreviewLoad(iframe) {
+            if (!iframe || !iframe.dataset.src) return;
+            iframe.src = iframe.dataset.src;
+            delete iframe.dataset.src;
         }
 
-        // ── Lazy load observer（进入视口才加载）────────────────────────
         const lazyObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (!entry.isIntersecting) return;
                 const iframe = entry.target.querySelector('iframe[data-src]');
-                if (iframe) loadQueue.push(iframe);
                 lazyObserver.unobserve(entry.target);
+                startPreviewLoad(iframe);
             });
-            processQueue();
         }, {
-            rootMargin: '0px'
+            root: null,
+            rootMargin: '0px',
+            threshold: 0,
         });
 
         document.querySelectorAll('.card').forEach(card => lazyObserver.observe(card));
