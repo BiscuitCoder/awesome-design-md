@@ -1,555 +1,714 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Design Gallery</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: oklch(98% 0.005 65);
-    --surface: oklch(100% 0 0);
-    --border: oklch(90% 0.01 65);
-    --text: oklch(20% 0.02 65);
-    --muted: oklch(55% 0.015 65);
-    --accent: oklch(52% 0.18 265);
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  header {
-    padding: 3rem 2rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .header-left h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(2rem, 4vw, 3.2rem);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  .header-left p {
-    margin-top: 0.5rem;
-    color: var(--muted);
-    font-size: 0.9rem;
-    font-weight: 300;
-  }
-
-  #search {
-    padding: 0.55rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    font-family: inherit;
-    font-size: 0.875rem;
-    color: var(--text);
-    width: 220px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  #search:focus { border-color: var(--accent); }
-  #search::placeholder { color: var(--muted); }
-
-  /* ── Grid ── */
-  main {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem 4rem;
-  }
-
-  #grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  /* ── Card ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: box-shadow 0.2s, background 0.2s;
-  }
-
-  .card:has(.card-footer:hover),
-  .card:has(.card-actions button:hover) {
-    box-shadow: 0 4px 24px oklch(0% 0 0 / 0.08);
-    background: oklch(97% 0.01 65);
-    z-index: 1;
-  }
-
-  /* ── Preview container ── */
-  .card-preview {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    background: oklch(95% 0.008 65);
-  }
-
-  .card-preview iframe {
-    position: absolute;
-    top: 0; left: 0;
-    width: 1280px;
-    height: 800px;
-    transform-origin: top left;
-    border: none;
-    display: block;
-  }
-
-  /* ── Hover action buttons ── */
-  .card-actions {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    gap: 6px;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 10;
-  }
-
-  .card:hover .card-actions { opacity: 1; }
-
-  .card-actions button {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
-    background: oklch(100% 0 0 / 0.92);
-    backdrop-filter: blur(6px);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text);
-    transition: background 0.15s, color 0.15s, transform 0.15s;
-    box-shadow: 0 1px 4px oklch(0% 0 0 / 0.12);
-  }
-
-  .card-actions button:hover {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.08);
-  }
-
-  .card-actions button svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-  }
-
-  /* ── Skeleton ── */
-  .skeleton {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      oklch(93% 0.008 65) 25%,
-      oklch(96% 0.005 65) 50%,
-      oklch(93% 0.008 65) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.6s infinite;
-  }
-
-  .card-preview.loaded .skeleton { display: none; }
-
-  @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* ── Card footer ── */
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    text-decoration: none;
-    color: inherit;
-    border-top: 1px solid var(--border);
-    transition: background 0.15s;
-  }
-
-  .card-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: color 0.15s;
-    text-transform: capitalize;
-  }
-
-  .card-footer:hover .card-name { color: var(--accent); }
-
-  .card-arrow {
-    opacity: 0;
-    color: var(--accent);
-    transform: translate(-4px, 4px);
-    transition: opacity 0.2s, transform 0.2s;
-    display: flex;
-  }
-
-  .card-footer:hover .card-arrow {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-
-  .card-arrow svg { width: 14px; height: 14px; }
-
-  /* ── Modal ── */
-  #modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #modal.open { display: flex; }
-
-  .modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: oklch(10% 0 0 / 0.6);
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  .modal-box {
-    position: relative;
-    z-index: 1;
-    width: calc(100vw - 48px);
-    height: calc(100vh - 48px);
-    max-width: 1400px;
-    background: var(--surface);
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 24px 80px oklch(0% 0 0 / 0.3);
-    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(16px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .modal-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 500;
-    text-transform: capitalize;
-  }
-
-  .modal-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .modal-github {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.35rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    text-decoration: none;
-    color: var(--text);
-    font-size: 0.8rem;
-    transition: border-color 0.15s, color 0.15s;
-  }
-
-  .modal-github:hover { border-color: var(--accent); color: var(--accent); }
-  .modal-github svg { width: 13px; height: 13px; }
-
-  .modal-close {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .modal-close:hover { background: oklch(93% 0.008 65); color: var(--text); }
-  .modal-close svg { width: 16px; height: 16px; }
-
-  .modal-body {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .modal-body iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-  }
-
-  .modal-loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: oklch(97% 0.005 65);
-    font-size: 0.875rem;
-    color: var(--muted);
-  }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: var(--muted);
-    font-size: 0.8rem;
-    border-top: 1px solid var(--border);
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome-design-md Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+         :root {
+            --bg: oklch(98% 0.005 65);
+            --surface: oklch(100% 0 0);
+            --border: oklch(90% 0.01 65);
+            --text: oklch(20% 0.02 65);
+            --muted: oklch(55% 0.015 65);
+            --accent: oklch(52% 0.18 265);
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        /* ── Header ── */
+        
+        header {
+            padding: 2.5rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .header-left h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        /* ── Title link ── */
+        
+        .header-title-link {
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.3em;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .header-title-link .title-text {
+            text-decoration: underline;
+            text-decoration-color: oklch(52% 0.18 265 / 0.2);
+            text-underline-offset: 0.12em;
+            text-decoration-thickness: 1px;
+            transition: text-decoration-color 0.25s;
+        }
+        
+        .header-title-link:hover .title-text {
+            text-decoration-color: var(--accent);
+        }
+        
+        .title-icon {
+            flex-shrink: 0;
+            width: 0.48em;
+            height: 0.48em;
+            margin-top: 0.22em;
+            color: var(--accent);
+            opacity: 0.4;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .header-title-link:hover .title-icon {
+            opacity: 1;
+            transform: translate(2px, -2px);
+        }
+        
+        .header-left p {
+            margin-top: 0.6rem;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .header-left p::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+        
+        #search {
+            padding: 0.55rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            font-family: inherit;
+            font-size: 0.875rem;
+            color: var(--text);
+            width: 220px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        #search:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px oklch(52% 0.18 265 / 0.08);
+        }
+        
+        #search::placeholder {
+            color: var(--muted);
+        }
+        /* ── Grid ── */
+        
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+        
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        /* ── Card ── */
+        
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.2s, background 0.2s;
+        }
+        
+        .card:has(.card-footer:hover),
+        .card:has(.card-actions button:hover) {
+            box-shadow: 0 4px 24px oklch(0% 0 0 / 0.08);
+            background: oklch(97% 0.01 65);
+            z-index: 1;
+        }
+        /* ── Preview container ── */
+        
+        .card-preview {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: oklch(95% 0.008 65);
+        }
+        
+        .card-preview iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1280px;
+            height: 800px;
+            transform-origin: top left;
+            border: none;
+            display: block;
+        }
+        /* ── Hover action buttons ── */
+        
+        .card-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+        
+        .card:hover .card-actions {
+            opacity: 1;
+        }
+        
+        .card-actions button {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: oklch(100% 0 0 / 0.92);
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: background 0.15s, color 0.15s, transform 0.15s;
+            box-shadow: 0 1px 4px oklch(0% 0 0 / 0.12);
+        }
+        
+        .card-actions button:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: scale(1.08);
+        }
+        
+        .card-actions button svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+        /* ── Skeleton ── */
+        
+        .skeleton {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( 90deg, oklch(93% 0.008 65) 25%, oklch(96% 0.005 65) 50%, oklch(93% 0.008 65) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            transition: opacity 0.35s ease;
+            z-index: 2;
+        }
+        
+        .card-preview.loaded .skeleton {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        /* ── iframe fade-in on load ── */
+        
+        .card-preview iframe {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card-preview.loaded iframe {
+            opacity: 1;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton {
+                animation: none !important;
+            }
+            .card-preview iframe {
+                transition: none !important;
+                opacity: 1 !important;
+            }
+        }
+        /* ── Card footer ── */
+        
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: inherit;
+            border-top: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        
+        .card-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.15s;
+            text-transform: capitalize;
+        }
+        
+        .card-footer:hover .card-name {
+            color: var(--accent);
+        }
+        
+        .card-arrow {
+            opacity: 0;
+            color: var(--accent);
+            transform: translate(-4px, 4px);
+            transition: opacity 0.2s, transform 0.2s;
+            display: flex;
+        }
+        
+        .card-footer:hover .card-arrow {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+        
+        .card-arrow svg {
+            width: 14px;
+            height: 14px;
+        }
+        /* ── Modal ── */
+        
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #modal.open {
+            display: flex;
+        }
+        
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: oklch(10% 0 0 / 0.6);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .modal-box {
+            position: relative;
+            z-index: 1;
+            width: calc(100vw - 48px);
+            height: calc(100vh - 48px);
+            max-width: 1400px;
+            background: var(--surface);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 80px oklch(0% 0 0 / 0.3);
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        
+        .modal-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        
+        .modal-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-github {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.8rem;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        
+        .modal-github:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .modal-github svg {
+            width: 13px;
+            height: 13px;
+        }
+        
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            transition: background 0.15s, color 0.15s;
+        }
+        
+        .modal-close:hover {
+            background: oklch(93% 0.008 65);
+            color: var(--text);
+        }
+        
+        .modal-close svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .modal-body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .modal-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        
+        .modal-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: oklch(97% 0.005 65);
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+        /* ── Footer ── */
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-  <div class="header-left">
-    <h1>Design Gallery</h1>
-    <p id="count"></p>
-  </div>
-  <input id="search" type="search" placeholder="Search brands…">
-</header>
+    <header>
+        <div class="header-left">
+            <h1>
+                <a class="header-title-link" href="https://github.com/VoltAgent/awesome-design-md" target="_blank" rel="noopener">
+                    <span class="title-text">Awesome-design-md</span>
+                    <svg class="title-icon" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/>
+                    </svg>
+                </a>
+            </h1>
+            <p id="count"></p>
+        </div>
+        <input id="search" type="search" placeholder="Search brands…">
+    </header>
 
-<main>
-  <div id="grid"></div>
-</main>
+    <main>
+        <div id="grid"></div>
+    </main>
 
-<footer>
-  <p>awesome-design-md · BiscuitCoder</p>
-</footer>
+    <footer>
+        <p>Awesome-design-md Preview· designed by <a href="https://github.com/BiscuitCoder" target="_blank" rel="noopener">BiscuitCoder</a></p>
+    </footer>
 
-<!-- Modal -->
-<div id="modal" role="dialog" aria-modal="true">
-  <div class="modal-backdrop" id="modal-backdrop"></div>
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-title" id="modal-title"></span>
-      <div class="modal-controls">
-        <a class="modal-github" id="modal-github" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          GitHub
-        </a>
-        <button class="modal-close" id="modal-close" title="Close (Esc)">
+    <!-- Modal -->
+    <div id="modal" role="dialog" aria-modal="true">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="modal-title"></span>
+                <div class="modal-controls">
+                    <a class="modal-github" id="modal-github" href="#" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>                        GitHub
+                    </a>
+                    <button class="modal-close" id="modal-close" title="Close (Esc)">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
         </button>
-      </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-loading" id="modal-loading">Loading…</div>
+                <iframe id="modal-iframe" src="" sandbox="allow-same-origin allow-scripts" title="Preview"></iframe>
+            </div>
+        </div>
     </div>
-    <div class="modal-body">
-      <div class="modal-loading" id="modal-loading">Loading…</div>
-      <iframe id="modal-iframe" src="" sandbox="allow-same-origin allow-scripts" title="Preview"></iframe>
-    </div>
-  </div>
-</div>
 
-<script>
-const GITHUB_BASE = 'https://github.com/BiscuitCoder/awesome-design-md/tree/main/design-md';
-const PREVIEW_BASE = 'design-md';
+    <script>
+        const GITHUB_BASE = 'https://github.com/VoltAgent/awesome-design-md/tree/main/design-md';
+        const PREVIEW_BASE = 'design-md';
 
-const BRANDS = [
-  'airbnb','airtable','apple','bmw','cal','claude','clay','clickhouse',
-  'cohere','coinbase','composio','cursor','elevenlabs','expo','ferrari',
-  'figma','framer','hashicorp','ibm','intercom','kraken','lamborghini',
-  'linear.app','lovable','minimax','mintlify','miro','mistral.ai','mongodb',
-  'notion','nvidia','ollama','opencode.ai','pinterest','posthog','raycast',
-  'renault','replicate','resend','revolut','runwayml','sanity','sentry',
-  'spacex','spotify','stripe','supabase','superhuman','tesla','together.ai',
-  'uber','vercel','voltagent','warp','webflow','wise','x.ai','zapier'
-];
+        const BRANDS = [
+            'airbnb', 'airtable', 'apple', 'bmw', 'cal', 'claude', 'clay', 'clickhouse',
+            'cohere', 'coinbase', 'composio', 'cursor', 'elevenlabs', 'expo', 'ferrari',
+            'figma', 'framer', 'hashicorp', 'ibm', 'intercom', 'kraken', 'lamborghini',
+            'linear.app', 'lovable', 'minimax', 'mintlify', 'miro', 'mistral.ai', 'mongodb',
+            'notion', 'nvidia', 'ollama', 'opencode.ai', 'pinterest', 'posthog', 'raycast',
+            'renault', 'replicate', 'resend', 'revolut', 'runwayml', 'sanity', 'sentry',
+            'spacex', 'spotify', 'stripe', 'supabase', 'superhuman', 'tesla', 'together.ai',
+            'uber', 'vercel', 'voltagent', 'warp', 'webflow', 'wise', 'x.ai', 'zapier'
+        ];
 
-// ── Build cards ──────────────────────────────────────────────
-const grid = document.getElementById('grid');
-document.getElementById('count').textContent = `${BRANDS.length} brands`;
+        // ── Build cards ──────────────────────────────────────────────
+        const grid = document.getElementById('grid');
+        document.getElementById('count').textContent = `${BRANDS.length} brands`;
 
-function buildCard(brand) {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.dataset.brand = brand;
+        function buildCard(brand) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.brand = brand;
 
-  // preview
-  const preview = document.createElement('div');
-  preview.className = 'card-preview';
+            // preview
+            const preview = document.createElement('div');
+            preview.className = 'card-preview';
 
-  const skeleton = document.createElement('div');
-  skeleton.className = 'skeleton';
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton';
 
-  const iframe = document.createElement('iframe');
-  iframe.dataset.src = `${PREVIEW_BASE}/${brand}/preview.html`;
-  iframe.sandbox = 'allow-same-origin allow-scripts';
-  iframe.title = brand;
-  iframe.addEventListener('load', () => preview.classList.add('loaded'), { once: true });
+            const iframe = document.createElement('iframe');
+            iframe.dataset.src = `${PREVIEW_BASE}/${brand}/preview.html`;
+            iframe.sandbox = 'allow-same-origin allow-scripts';
+            iframe.title = brand;
+            iframe.addEventListener('load', () => preview.classList.add('loaded'), {
+                once: true
+            });
 
-  preview.appendChild(skeleton);
-  preview.appendChild(iframe);
+            preview.appendChild(skeleton);
+            preview.appendChild(iframe);
 
-  // action buttons
-  const actions = document.createElement('div');
-  actions.className = 'card-actions';
+            // action buttons
+            const actions = document.createElement('div');
+            actions.className = 'card-actions';
 
-  const fullscreenBtn = document.createElement('button');
-  fullscreenBtn.title = 'Fullscreen preview';
-  fullscreenBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            const fullscreenBtn = document.createElement('button');
+            fullscreenBtn.title = 'Fullscreen preview';
+            fullscreenBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
     <polyline points="1,6 1,1 6,1"/><polyline points="10,1 15,1 15,6"/>
     <polyline points="15,10 15,15 10,15"/><polyline points="6,15 1,15 1,10"/>
   </svg>`;
-  fullscreenBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    openModal(brand);
-  });
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(brand);
+            });
 
-  actions.appendChild(fullscreenBtn);
-  preview.appendChild(actions);
+            actions.appendChild(fullscreenBtn);
+            preview.appendChild(actions);
 
-  // footer link
-  const footer = document.createElement('a');
-  footer.className = 'card-footer';
-  footer.href = `${GITHUB_BASE}/${brand}`;
-  footer.target = '_blank';
-  footer.rel = 'noopener';
+            // footer link
+            const footer = document.createElement('a');
+            footer.className = 'card-footer';
+            footer.href = `${GITHUB_BASE}/${brand}`;
+            footer.target = '_blank';
+            footer.rel = 'noopener';
 
-  const name = document.createElement('span');
-  name.className = 'card-name';
-  name.textContent = brand;
+            const name = document.createElement('span');
+            name.className = 'card-name';
+            name.textContent = brand;
 
-  const arrow = document.createElement('span');
-  arrow.className = 'card-arrow';
-  arrow.innerHTML = `<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            const arrow = document.createElement('span');
+            arrow.className = 'card-arrow';
+            arrow.innerHTML = `<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
     <line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/>
   </svg>`;
 
-  footer.appendChild(name);
-  footer.appendChild(arrow);
+            footer.appendChild(name);
+            footer.appendChild(arrow);
 
-  card.appendChild(preview);
-  card.appendChild(footer);
-  return card;
-}
+            card.appendChild(preview);
+            card.appendChild(footer);
+            return card;
+        }
 
-BRANDS.forEach(brand => grid.appendChild(buildCard(brand)));
+        BRANDS.forEach(brand => grid.appendChild(buildCard(brand)));
 
-// ── Scale iframes ────────────────────────────────────────────
-function scaleIframes() {
-  document.querySelectorAll('.card-preview').forEach(container => {
-    const iframe = container.querySelector('iframe');
-    if (!iframe) return;
-    const scale = container.offsetWidth / 1280;
-    iframe.style.transform = `scale(${scale})`;
-    container.style.height = `${Math.round(800 * scale)}px`;
-  });
-}
-scaleIframes();
-window.addEventListener('resize', scaleIframes);
+        // ── Scale iframes ────────────────────────────────────────────
+        function scaleIframes() {
+            document.querySelectorAll('.card-preview').forEach(container => {
+                const iframe = container.querySelector('iframe');
+                if (!iframe) return;
+                const scale = container.offsetWidth / 1280;
+                iframe.style.transform = `scale(${scale})`;
+                container.style.height = `${Math.round(800 * scale)}px`;
+            });
+        }
+        scaleIframes();
+        window.addEventListener('resize', scaleIframes);
 
-// ── Lazy load ────────────────────────────────────────────────
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    const iframe = entry.target.querySelector('iframe[data-src]');
-    if (iframe) {
-      iframe.src = iframe.dataset.src;
-      delete iframe.dataset.src;
-    }
-    observer.unobserve(entry.target);
-  });
-}, { rootMargin: '200px 0px' });
+        // ── Throttled lazy load ──────────────────────────────────────
+        const MAX_CONCURRENT = 4;
+        let loadingCount = 0;
+        const loadQueue = [];
 
-document.querySelectorAll('.card').forEach(card => observer.observe(card));
+        function processQueue() {
+            while (loadingCount < MAX_CONCURRENT && loadQueue.length > 0) {
+                const iframe = loadQueue.shift();
+                if (!iframe.dataset.src) continue; // already loaded
+                loadingCount++;
+                iframe.src = iframe.dataset.src;
+                delete iframe.dataset.src;
+                const done = () => {
+                    loadingCount--;
+                    processQueue();
+                };
+                iframe.addEventListener('load', done, {
+                    once: true
+                });
+                iframe.addEventListener('error', done, {
+                    once: true
+                });
+            }
+        }
 
-// ── Search ───────────────────────────────────────────────────
-document.getElementById('search').addEventListener('input', function () {
-  const q = this.value.trim().toLowerCase();
-  document.querySelectorAll('.card').forEach(card => {
-    card.style.display = card.dataset.brand.includes(q) ? '' : 'none';
-  });
-});
+        // ── Lazy load observer（进入视口才加载）────────────────────────
+        const lazyObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const iframe = entry.target.querySelector('iframe[data-src]');
+                if (iframe) loadQueue.push(iframe);
+                lazyObserver.unobserve(entry.target);
+            });
+            processQueue();
+        }, {
+            rootMargin: '0px'
+        });
 
-// ── Modal ────────────────────────────────────────────────────
-const modal       = document.getElementById('modal');
-const modalTitle  = document.getElementById('modal-title');
-const modalGithub = document.getElementById('modal-github');
-const modalIframe = document.getElementById('modal-iframe');
-const modalLoad   = document.getElementById('modal-loading');
-let currentBrand  = null;
+        document.querySelectorAll('.card').forEach(card => lazyObserver.observe(card));
 
-function openModal(brand) {
-  currentBrand = brand;
-  modalTitle.textContent = brand;
-  modalGithub.href = `${GITHUB_BASE}/${brand}`;
+        // ── Search ───────────────────────────────────────────────────
+        document.getElementById('search').addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.display = card.dataset.brand.includes(q) ? '' : 'none';
+            });
+        });
 
-  // reset state
-  modalLoad.style.display = 'flex';
-  modalIframe.style.opacity = '0';
-  modalIframe.src = '';
+        // ── Modal ────────────────────────────────────────────────────
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalGithub = document.getElementById('modal-github');
+        const modalIframe = document.getElementById('modal-iframe');
+        const modalLoad = document.getElementById('modal-loading');
+        let currentBrand = null;
 
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+        function openModal(brand) {
+            currentBrand = brand;
+            modalTitle.textContent = brand;
+            modalGithub.href = `${GITHUB_BASE}/${brand}`;
 
-  // load iframe
-  modalIframe.src = `${PREVIEW_BASE}/${brand}/preview.html`;
-  modalIframe.onload = () => {
-    modalLoad.style.display = 'none';
-    modalIframe.style.opacity = '1';
-    modalIframe.style.transition = 'opacity 0.2s';
-  };
-}
+            // reset state
+            modalLoad.style.display = 'flex';
+            modalIframe.style.opacity = '0';
+            modalIframe.src = '';
 
-function closeModal() {
-  modal.classList.remove('open');
-  document.body.style.overflow = '';
-  modalIframe.src = '';
-  currentBrand = null;
-}
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
 
-document.getElementById('modal-close').addEventListener('click', closeModal);
-document.getElementById('modal-backdrop').addEventListener('click', closeModal);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-</script>
+            // load iframe
+            modalIframe.src = `${PREVIEW_BASE}/${brand}/preview.html`;
+            modalIframe.onload = () => {
+                modalLoad.style.display = 'none';
+                modalIframe.style.opacity = '1';
+                modalIframe.style.transition = 'opacity 0.2s';
+            };
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+            modalIframe.src = '';
+            currentBrand = null;
+        }
+
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        document.getElementById('modal-backdrop').addEventListener('click', closeModal);
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
 </body>
+
 </html>
