@@ -1,431 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Awesome Design MD — Gallery</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg: oklch(98% 0.006 65);
-      --bg-card: oklch(99.5% 0.003 65);
-      --text: oklch(16% 0.012 65);
-      --text-muted: oklch(52% 0.01 65);
-      --border: oklch(88% 0.012 65);
-      --border-hover: oklch(68% 0.015 65);
-      --accent: oklch(48% 0.18 255);
-    }
+  :root {
+    --bg: oklch(98% 0.005 65);
+    --surface: oklch(100% 0 0);
+    --border: oklch(90% 0.01 65);
+    --text: oklch(20% 0.02 65);
+    --muted: oklch(55% 0.015 65);
+    --accent: oklch(52% 0.18 265);
+  }
 
-    html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      min-height: 100vh;
-    }
+  /* ── Header ── */
+  header {
+    padding: 3rem 2rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
 
-    /* ── Header ── */
-    header {
-      padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4rem) 0;
-    }
+  .header-left h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
 
-    .header-top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
+  .header-left p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
 
-    h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(2.4rem, 5.5vw, 4.5rem);
-      letter-spacing: -0.02em;
-      line-height: 1;
-    }
+  #search {
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: inherit;
+    font-size: 0.875rem;
+    color: var(--text);
+    width: 220px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--muted); }
 
-    h1 em {
-      font-style: italic;
-      font-weight: 300;
-    }
+  /* ── Grid ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
 
-    .header-meta {
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
 
-    .divider {
-      margin-top: 2rem;
-      border: none;
-      border-top: 1px solid var(--border);
-    }
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, background 0.2s;
+  }
 
-    .header-sub {
-      margin-top: 1.25rem;
-      padding-bottom: clamp(1.5rem, 4vw, 3rem);
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
+  .card:has(.card-footer:hover),
+  .card:has(.card-actions button:hover) {
+    box-shadow: 0 4px 24px oklch(0% 0 0 / 0.08);
+    background: oklch(97% 0.01 65);
+    z-index: 1;
+  }
 
-    .header-sub p {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      max-width: 420px;
-      line-height: 1.6;
-    }
+  /* ── Preview container ── */
+  .card-preview {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: oklch(95% 0.008 65);
+  }
 
-    .search-wrap {
-      margin-left: auto;
-    }
+  .card-preview iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1280px;
+    height: 800px;
+    transform-origin: top left;
+    border: none;
+    display: block;
+  }
 
-    #search {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 300;
-      color: var(--text);
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 2px;
-      padding: 0.5rem 0.85rem;
-      width: 220px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+  /* ── Hover action buttons ── */
+  .card-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+  }
 
-    #search::placeholder { color: var(--text-muted); }
-    #search:focus { border-color: var(--border-hover); }
+  .card:hover .card-actions { opacity: 1; }
 
-    /* ── Grid ── */
-    main {
-      padding: 0 clamp(1.5rem, 5vw, 4rem) clamp(3rem, 6vw, 5rem);
-    }
+  .card-actions button {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: oklch(100% 0 0 / 0.92);
+    backdrop-filter: blur(6px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+    box-shadow: 0 1px 4px oklch(0% 0 0 / 0.12);
+  }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1px;
-      border: 1px solid var(--border);
-    }
+  .card-actions button:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.08);
+  }
 
-    /* ── Card ── */
-    .card {
-      background: var(--bg-card);
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      color: inherit;
-      display: block;
-      position: relative;
-      overflow: hidden;
-      transition: background 0.2s;
-    }
+  .card-actions button svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
 
-    .card:has(.card-footer:hover) {
-      background: oklch(97% 0.01 65);
-      z-index: 1;
-    }
+  /* ── Skeleton ── */
+  .skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      oklch(93% 0.008 65) 25%,
+      oklch(96% 0.005 65) 50%,
+      oklch(93% 0.008 65) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+  }
 
-    .card-footer:hover .card-name {
-      color: var(--accent);
-    }
+  .card-preview.loaded .skeleton { display: none; }
 
-    .card-footer:hover ~ .preview-overlay,
-    .card:has(.card-footer:hover) .preview-overlay {
-      opacity: 1;
-    }
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 
-    /* iframe preview */
-    .card-preview {
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
+  /* ── Card footer ── */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    border-top: 1px solid var(--border);
+    transition: background 0.15s;
+  }
 
-    /* skeleton placeholder shown before iframe loads */
-    .card-preview .skeleton {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        90deg,
-        oklch(93% 0.008 65) 25%,
-        oklch(96% 0.005 65) 50%,
-        oklch(93% 0.008 65) 75%
-      );
-      background-size: 200% 100%;
-      animation: shimmer 1.6s infinite;
-    }
+  .card-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.15s;
+    text-transform: capitalize;
+  }
 
-    .card-preview.loaded .skeleton { display: none; }
+  .card-footer:hover .card-name { color: var(--accent); }
 
-    @keyframes shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+  .card-arrow {
+    opacity: 0;
+    color: var(--accent);
+    transform: translate(-4px, 4px);
+    transition: opacity 0.2s, transform 0.2s;
+    display: flex;
+  }
 
-    .card-preview iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 1280px;
-      height: 800px;
-      transform-origin: top left;
-      border: none;
-    }
+  .card-footer:hover .card-arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
 
-    .preview-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        to bottom,
-        transparent 50%,
-        oklch(16% 0.012 65 / 0.08) 100%
-      );
-      opacity: 0;
-      transition: opacity 0.25s;
-      pointer-events: none;
-    }
+  .card-arrow svg { width: 14px; height: 14px; }
 
-    /* card footer */
-    .card-footer {
-      padding: 0.85rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      text-decoration: none;
-      color: inherit;
-      cursor: pointer;
-    }
+  /* ── Modal ── */
+  #modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .card-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-      transition: color 0.2s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  #modal.open { display: flex; }
 
-    .card-arrow {
-      flex-shrink: 0;
-      width: 18px;
-      height: 18px;
-      opacity: 0;
-      transform: translate(-4px, 4px);
-      transition: opacity 0.2s, transform 0.2s;
-      color: var(--accent);
-    }
+  .modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: oklch(10% 0 0 / 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease;
+  }
 
-    .card-footer:hover .card-arrow {
-      opacity: 1;
-      transform: translate(0, 0);
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
 
-    /* empty state */
-    .empty {
-      display: none;
-      grid-column: 1 / -1;
-      padding: 4rem 2rem;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
+  .modal-box {
+    position: relative;
+    z-index: 1;
+    width: calc(100vw - 48px);
+    height: calc(100vh - 48px);
+    max-width: 1400px;
+    background: var(--surface);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 80px oklch(0% 0 0 / 0.3);
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-    /* ── Footer ── */
-    footer {
-      border-top: 1px solid var(--border);
-      margin: 0 clamp(1.5rem, 5vw, 4rem);
-      padding: 1.5rem 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
 
-    footer p {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
 
-    footer a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: capitalize;
+  }
 
-    footer a:hover { color: var(--text); }
+  .modal-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    @media (max-width: 640px) {
-      .search-wrap { margin-left: 0; width: 100%; }
-      #search { width: 100%; }
-    }
-  </style>
+  .modal-github {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.8rem;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .modal-github:hover { border-color: var(--accent); color: var(--accent); }
+  .modal-github svg { width: 13px; height: 13px; }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .modal-close:hover { background: oklch(93% 0.008 65); color: var(--text); }
+  .modal-close svg { width: 16px; height: 16px; }
+
+  .modal-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .modal-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .modal-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: oklch(97% 0.005 65);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
 </head>
 <body>
 
 <header>
-  <div class="header-top">
-    <h1>Awesome <em>Design</em> MD</h1>
-    <span class="header-meta" id="count-label">— brands</span>
+  <div class="header-left">
+    <h1>Design Gallery</h1>
+    <p id="count"></p>
   </div>
-  <hr class="divider">
-  <div class="header-sub">
-    <p>Design system docs from the world's best product teams, rendered as markdown.</p>
-    <div class="search-wrap">
-      <input id="search" type="search" placeholder="Filter brands…" autocomplete="off" spellcheck="false">
-    </div>
-  </div>
+  <input id="search" type="search" placeholder="Search brands…">
 </header>
 
 <main>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty">No brands match your search.</div>
+  <div id="grid"></div>
 </main>
 
 <footer>
-  <p>Scroll inside any preview · click the brand name to open on GitHub.</p>
-  <a href="https://github.com/BiscuitCoder/awesome-design-md" target="_blank" rel="noopener">
-    BiscuitCoder/awesome-design-md ↗
-  </a>
+  <p>awesome-design-md · BiscuitCoder</p>
 </footer>
 
+<!-- Modal -->
+<div id="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title"></span>
+      <div class="modal-controls">
+        <a class="modal-github" id="modal-github" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        <button class="modal-close" id="modal-close" title="Close (Esc)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-loading" id="modal-loading">Loading…</div>
+      <iframe id="modal-iframe" src="" sandbox="allow-same-origin allow-scripts" title="Preview"></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
-  const GITHUB_BASE = 'https://github.com/BiscuitCoder/awesome-design-md/tree/main/design-md';
-  const PREVIEW_BASE = 'design-md';
+const GITHUB_BASE = 'https://github.com/BiscuitCoder/awesome-design-md/tree/main/design-md';
+const PREVIEW_BASE = 'design-md';
 
-  const brands = [
-    'airbnb','airtable','apple','bmw','cal','claude','clay',
-    'clickhouse','cohere','coinbase','composio','cursor','elevenlabs',
-    'expo','ferrari','figma','framer','hashicorp','ibm','intercom',
-    'kraken','lamborghini','linear.app','lovable','minimax','mintlify',
-    'miro','mistral.ai','mongodb','notion','nvidia','ollama',
-    'opencode.ai','pinterest','posthog','raycast','renault','replicate',
-    'resend','revolut','runwayml','sanity','sentry','spacex','spotify',
-    'stripe','supabase','superhuman','tesla','together.ai','uber',
-    'vercel','voltagent','warp','webflow','wise','x.ai','zapier'
-  ];
+const BRANDS = [
+  'airbnb','airtable','apple','bmw','cal','claude','clay','clickhouse',
+  'cohere','coinbase','composio','cursor','elevenlabs','expo','ferrari',
+  'figma','framer','hashicorp','ibm','intercom','kraken','lamborghini',
+  'linear.app','lovable','minimax','mintlify','miro','mistral.ai','mongodb',
+  'notion','nvidia','ollama','opencode.ai','pinterest','posthog','raycast',
+  'renault','replicate','resend','revolut','runwayml','sanity','sentry',
+  'spacex','spotify','stripe','supabase','superhuman','tesla','together.ai',
+  'uber','vercel','voltagent','warp','webflow','wise','x.ai','zapier'
+];
 
-  document.getElementById('count-label').textContent = `— ${brands.length} brands`;
+// ── Build cards ──────────────────────────────────────────────
+const grid = document.getElementById('grid');
+document.getElementById('count').textContent = `${BRANDS.length} brands`;
 
-  const grid = document.getElementById('grid');
-  const empty = document.getElementById('empty');
+function buildCard(brand) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.brand = brand;
 
-  // Build cards
-  brands.forEach(brand => {
-    const a = document.createElement('div');
-    a.className = 'card';
-    a.dataset.brand = brand;
+  // preview
+  const preview = document.createElement('div');
+  preview.className = 'card-preview';
 
-    const preview = document.createElement('div');
-    preview.className = 'card-preview';
+  const skeleton = document.createElement('div');
+  skeleton.className = 'skeleton';
 
-    const skeleton = document.createElement('div');
-    skeleton.className = 'skeleton';
+  const iframe = document.createElement('iframe');
+  iframe.dataset.src = `${PREVIEW_BASE}/${brand}/preview.html`;
+  iframe.sandbox = 'allow-same-origin allow-scripts';
+  iframe.title = brand;
+  iframe.addEventListener('load', () => preview.classList.add('loaded'), { once: true });
 
-    const iframe = document.createElement('iframe');
-    iframe.dataset.src = `${PREVIEW_BASE}/${brand}/preview.html`;
-    iframe.title = brand;
-    iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
-    iframe.addEventListener('load', () => preview.classList.add('loaded'), { once: true });
+  preview.appendChild(skeleton);
+  preview.appendChild(iframe);
 
-    const overlay = document.createElement('div');
-    overlay.className = 'preview-overlay';
+  // action buttons
+  const actions = document.createElement('div');
+  actions.className = 'card-actions';
 
-    preview.appendChild(skeleton);
-    preview.appendChild(iframe);
-    preview.appendChild(overlay);
-
-    const footer = document.createElement('a');
-    footer.className = 'card-footer';
-    footer.href = `${GITHUB_BASE}/${brand}`;
-    footer.target = '_blank';
-    footer.rel = 'noopener';
-
-    const name = document.createElement('span');
-    name.className = 'card-name';
-    name.textContent = brand;
-
-    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    arrow.setAttribute('viewBox', '0 0 24 24');
-    arrow.setAttribute('fill', 'none');
-    arrow.setAttribute('stroke', 'currentColor');
-    arrow.setAttribute('stroke-width', '1.5');
-    arrow.classList.add('card-arrow');
-    arrow.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15M4.5 4.5H19.5v15"/>';
-
-    footer.appendChild(name);
-    footer.appendChild(arrow);
-
-    a.appendChild(preview);
-    a.appendChild(footer);
-    grid.appendChild(a);
+  const fullscreenBtn = document.createElement('button');
+  fullscreenBtn.title = 'Fullscreen preview';
+  fullscreenBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+    <polyline points="1,6 1,1 6,1"/><polyline points="10,1 15,1 15,6"/>
+    <polyline points="15,10 15,15 10,15"/><polyline points="6,15 1,15 1,10"/>
+  </svg>`;
+  fullscreenBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openModal(brand);
   });
 
-  // Scale iframes to fit preview containers
-  function scaleIframes() {
-    document.querySelectorAll('.card-preview').forEach(container => {
-      const iframe = container.querySelector('iframe');
-      if (!iframe) return;
-      const scale = container.offsetWidth / 1280;
-      iframe.style.transform = `scale(${scale})`;
-      container.style.height = `${Math.round(800 * scale)}px`;
-    });
-  }
+  actions.appendChild(fullscreenBtn);
+  preview.appendChild(actions);
 
-  scaleIframes();
-  window.addEventListener('resize', scaleIframes);
+  // footer link
+  const footer = document.createElement('a');
+  footer.className = 'card-footer';
+  footer.href = `${GITHUB_BASE}/${brand}`;
+  footer.target = '_blank';
+  footer.rel = 'noopener';
 
-  // Lazy-load iframes via IntersectionObserver
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const iframe = entry.target.querySelector('iframe[data-src]');
-      if (iframe) {
-        iframe.src = iframe.dataset.src;
-        delete iframe.dataset.src;
-      }
-      observer.unobserve(entry.target);
-    });
-  }, {
-    rootMargin: '200px 0px', // 提前 200px 开始加载
+  const name = document.createElement('span');
+  name.className = 'card-name';
+  name.textContent = brand;
+
+  const arrow = document.createElement('span');
+  arrow.className = 'card-arrow';
+  arrow.innerHTML = `<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+    <line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/>
+  </svg>`;
+
+  footer.appendChild(name);
+  footer.appendChild(arrow);
+
+  card.appendChild(preview);
+  card.appendChild(footer);
+  return card;
+}
+
+BRANDS.forEach(brand => grid.appendChild(buildCard(brand)));
+
+// ── Scale iframes ────────────────────────────────────────────
+function scaleIframes() {
+  document.querySelectorAll('.card-preview').forEach(container => {
+    const iframe = container.querySelector('iframe');
+    if (!iframe) return;
+    const scale = container.offsetWidth / 1280;
+    iframe.style.transform = `scale(${scale})`;
+    container.style.height = `${Math.round(800 * scale)}px`;
   });
+}
+scaleIframes();
+window.addEventListener('resize', scaleIframes);
 
-  document.querySelectorAll('.card').forEach(card => observer.observe(card));
-
-  // Search filter
-  const searchInput = document.getElementById('search');
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.trim().toLowerCase();
-    let visible = 0;
-    document.querySelectorAll('.card').forEach(card => {
-      const match = !q || card.dataset.brand.includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) visible++;
-    });
-    empty.style.display = visible === 0 ? 'block' : 'none';
-    document.getElementById('count-label').textContent =
-      q ? `— ${visible} of ${brands.length}` : `— ${brands.length} brands`;
-    // Re-scale after layout shift
-    requestAnimationFrame(scaleIframes);
+// ── Lazy load ────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const iframe = entry.target.querySelector('iframe[data-src]');
+    if (iframe) {
+      iframe.src = iframe.dataset.src;
+      delete iframe.dataset.src;
+    }
+    observer.unobserve(entry.target);
   });
+}, { rootMargin: '200px 0px' });
+
+document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+// ── Search ───────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', function () {
+  const q = this.value.trim().toLowerCase();
+  document.querySelectorAll('.card').forEach(card => {
+    card.style.display = card.dataset.brand.includes(q) ? '' : 'none';
+  });
+});
+
+// ── Modal ────────────────────────────────────────────────────
+const modal       = document.getElementById('modal');
+const modalTitle  = document.getElementById('modal-title');
+const modalGithub = document.getElementById('modal-github');
+const modalIframe = document.getElementById('modal-iframe');
+const modalLoad   = document.getElementById('modal-loading');
+let currentBrand  = null;
+
+function openModal(brand) {
+  currentBrand = brand;
+  modalTitle.textContent = brand;
+  modalGithub.href = `${GITHUB_BASE}/${brand}`;
+
+  // reset state
+  modalLoad.style.display = 'flex';
+  modalIframe.style.opacity = '0';
+  modalIframe.src = '';
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // load iframe
+  modalIframe.src = `${PREVIEW_BASE}/${brand}/preview.html`;
+  modalIframe.onload = () => {
+    modalLoad.style.display = 'none';
+    modalIframe.style.opacity = '1';
+    modalIframe.style.transition = 'opacity 0.2s';
+  };
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  modalIframe.src = '';
+  currentBrand = null;
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-backdrop').addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-
 </body>
 </html>
